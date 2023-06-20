@@ -22,8 +22,10 @@ def get_all_articles(link_list):
 
             article_dict = {'title': title, 'content': article}
             article_list.append(article_dict)
-
-    return article_list
+    
+    codeup_df = pd.DataFrame(article_list)
+    
+    return codeup_df
 
 def get_news_articles():
     links = [
@@ -52,5 +54,7 @@ def get_news_articles():
                 'content': content,
                 'category': category
             })
+            
+        articles_df = pd.DataFrame(news_articles)
 
-    return news_articles
+    return articles_df
