@@ -8,23 +8,32 @@ from pprint import pprint
 
 
 
-def get_all_articles(link_list):
+def get_all_articles(url):
     article_list = []
     headers = {"User-Agent": "Chrome/91.0.4472.124"}
 
-    for links in link_list:
-        for link in links:
-            response = requests.get(link, headers=headers)
-            soup = BeautifulSoup(response.content, 'html.parser')
-            title = soup.find('h1', class_='entry-title').text
-            divcont = soup.find('div', class_='entry-content')
-            article = [para.text for para in divcont.find_all('p')]
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.content, 'html.parser')
 
-            article_dict = {'title': title, 'content': article}
-            article_list.append(article_dict)
-    
+    # Extract the href attribute from <a> tags with class 'more-link'
+    links = soup.find_all('a', class_='more-link')
+    link_list = [link['href'] for link in links]
+
+    for link in link_list:
+        response = requests.get(link, headers=headers)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        title = soup.find('h1', class_='entry-title').text
+        divcont = soup.find('div', class_='entry-content')
+        article = [para.text for para in divcont.find_all('p')]
+
+        article_nl = ' '.join(article)
+
+        article_dict = {'title': title, 'content': article_nl}
+        article_list.append(article_dict)
+
     codeup_df = pd.DataFrame(article_list)
-    
+
     return codeup_df
 
 def get_news_articles():
